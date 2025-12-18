@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { User } from '../types';
 import { Mail, Lock, User as UserIcon, ShieldCheck, AlertCircle, Loader2 } from 'lucide-react';
 import { auth, isFirebaseReady } from '../firebase';
+// Fixed: Correct modular SDK imports for Firebase Authentication standalone functions
 import { 
   signInWithEmailAndPassword, 
   createUserWithEmailAndPassword, 
@@ -80,8 +81,8 @@ const Auth: React.FC<AuthProps> = ({ onLogin }) => {
 
         <div className="p-8">
           <div className="flex bg-slate-100 p-1 rounded-2xl mb-8">
-            <button onClick={() => setIsLogin(true)} className={`flex-1 py-3 rounded-xl font-bold text-sm ${isLogin ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-50'}`}>登入</button>
-            <button onClick={() => setIsLogin(false)} className={`flex-1 py-3 rounded-xl font-bold text-sm ${!isLogin ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-50'}`}>註冊</button>
+            <button onClick={() => setIsLogin(true)} className={`flex-1 py-3 rounded-xl font-bold text-sm transition-colors ${isLogin ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500'}`}>登入</button>
+            <button onClick={() => setIsLogin(false)} className={`flex-1 py-3 rounded-xl font-bold text-sm transition-colors ${!isLogin ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500'}`}>註冊</button>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">

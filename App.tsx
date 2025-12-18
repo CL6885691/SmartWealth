@@ -10,8 +10,9 @@ import Transactions from './components/Transactions';
 import Reports from './components/Reports';
 import Auth from './components/Auth';
 import { db, auth as fbAuth, isFirebaseReady } from './firebase';
-import { collection, onSnapshot, query, doc, setDoc, deleteDoc } from 'firebase/firestore';
-import { signOut } from 'firebase/auth';
+import { collection, onSnapshot, query } from 'firebase/firestore';
+// Correct modular imports for Firebase Authentication functions
+import { signOut, onAuthStateChanged } from 'firebase/auth';
 
 const App: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -30,7 +31,8 @@ const App: React.FC = () => {
       return;
     }
 
-    const unsubscribe = fbAuth.onAuthStateChanged((fbUser: any) => {
+    // Fixed: onAuthStateChanged is a standalone function in Firebase v9 modular SDK
+    const unsubscribe = onAuthStateChanged(fbAuth, (fbUser: any) => {
       if (fbUser) {
         setUser({ id: fbUser.uid, email: fbUser.email || '', name: fbUser.displayName || '使用者' });
       } else {
@@ -75,14 +77,6 @@ const App: React.FC = () => {
     if (isFirebaseReady()) await signOut(fbAuth);
     localStorage.removeItem('sw_user');
     setUser(null);
-  };
-
-  const syncAccounts = async (newAccounts: any) => {
-    if (!user || !isFirebaseReady()) {
-      setAccounts(newAccounts);
-      return;
-    }
-    // 簡單的批次更新邏輯 (這僅處理單一帳戶變動，實際調用處需配合 API)
   };
 
   if (loading) return <div className="h-screen flex items-center justify-center">載入中...</div>;

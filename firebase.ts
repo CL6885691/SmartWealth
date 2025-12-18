@@ -1,5 +1,6 @@
 
 import { initializeApp, getApps } from 'firebase/app';
+// Fixed: Correct modular SDK import for getAuth
 import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 
@@ -8,20 +9,33 @@ let app;
 let auth: any = null;
 let db: any = null;
 
-try {
-  const config = JSON.parse(firebaseConfigStr || '{}');
-  if (config.apiKey && !getApps().length) {
-    app = initializeApp(config);
-    auth = getAuth(app);
-    db = getFirestore(app);
-  } else if (getApps().length) {
-    app = getApps()[0];
-    auth = getAuth(app);
-    db = getFirestore(app);
+const initFirebase = () => {
+  try {
+    if (!firebaseConfigStr || firebaseConfigStr === '{}') {
+      console.warn("FIREBASE_CONFIG 為空，系統將進入「展示模式」。");
+      return;
+    }
+
+    const config = JSON.parse(firebaseConfigStr);
+    if (config.apiKey) {
+      if (!getApps().length) {
+        app = initializeApp(config);
+      } else {
+        app = getApps()[0];
+      }
+      // Fixed: Initialize modular Auth and Firestore using standalone functions
+      auth = getAuth(app);
+      db = getFirestore(app);
+      console.log("Firebase 成功連線。");
+    }
+  } catch (error) {
+    console.error("Firebase 配置解析失敗:", error);
   }
-} catch (error) {
-  console.warn("Firebase 初始化失敗，系統將進入離線展示模式。請檢查 FIREBASE_CONFIG 環境變數。");
-}
+};
+
+initFirebase();
 
 export { auth, db };
-export const isFirebaseReady = () => auth !== null && db !== null;
+export const isFirebaseReady = () => {
+  return auth !== null && db !== null;
+};
